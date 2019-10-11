@@ -15,8 +15,10 @@ void printPrompt() {
   while (getline(ss, curDir, '/')) {
   }
 
+  // Get current time
   time_t t = time(0);
   tm* now = localtime(&t);
 
-  cout << now->tm_hour << ":" << now->tm_min << " " << curDir << '/' << endl;
+  // Prints time as HH:MM (24 hour format)
+  cout << now->tm_hour << ":" << now->tm_min << " /" << curDir << '/' << endl;
 }
