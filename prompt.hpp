@@ -1,10 +1,14 @@
 #include <iostream>
 #include <stdio.h>
+#include <sstream>
 
 using namespace std;
 
 void printPrompt() {
-  char* pwd = getenv("PWD");
+  string pwd = getenv("PWD");
+  stringstream ss(pwd);
+  string curDir;
+  while (getline(ss, curDir, '/')) {}
 
-  cout << pwd;
+  cout << curDir << endl;
 }
