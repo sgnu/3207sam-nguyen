@@ -16,3 +16,9 @@ vector<string> parseInput(string input) {
 
   return tokens;
 }
+
+class Command {
+  public:
+    string command;
+    vector<string> args;
+};
