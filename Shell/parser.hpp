@@ -18,17 +18,25 @@ class Command {
     vector<string> args;
     redirect rd;
 
-    void setCommand(string command);
-    void setArgs(vector<string> args);
+    void setCommand(string command) {
+      this->command = command;
+    }
+
+    void setArgs(vector<string> args) {
+      this->args = args;
+    }
+
+    string toString() {
+      string retval = command;
+
+      for (vector<string>::iterator it = this->args.begin(); it != this->args.end(); ++it) {
+        retval += " " + *it;
+      }
+
+      return retval;
+    }
 };
 
-void Command::setCommand(string command) {
-  this->command = command;
-}
-
-void Command::setArgs(vector<string> args) {
-  this->args = args;
-}
 
 Command parseCommand(string input) {
   stringstream ss(input);
@@ -42,6 +50,8 @@ Command parseCommand(string input) {
   }
 
   command.setCommand(tokens.at(0));
+  tokens.erase(tokens.begin());
+  command.setArgs(tokens);
 
   return command;
 }
