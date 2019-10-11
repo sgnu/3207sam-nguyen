@@ -21,5 +21,5 @@ void printPrompt() {
 
   // // Prints time as HH:MM (24 hour format)
   // cout << now->tm_hour << ":" << now->tm_min << " /" << curDir << '/' << endl;
-  cout << "myshell> ";
+  cout << "\033[36m" << "myshell> " << "\033[0m";
 }
