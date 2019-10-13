@@ -7,8 +7,6 @@
 
 using namespace std;
 
-enum redirect { NONE, PIPE, INPUT, OUTPUT };
-
 class Command {
  public:
   string command;
