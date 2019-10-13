@@ -16,7 +16,10 @@ class Command {
   public:
     string command;
     vector<string> args;
-    redirect rd;
+    // File descriptor if command is input redir
+    int inRedir;
+    // File descriptor if command is output redir
+    int outRedir;
 
     void setCommand(string command) {
       this->command = command;
@@ -26,6 +29,7 @@ class Command {
       this->args = args;
     }
 
+    // Returns the full string of command and args
     string toString() {
       string retval = command;
 
@@ -35,9 +39,25 @@ class Command {
 
       return retval;
     }
+
+    // Returns the command
+    string getCommand() {
+      return this->command;
+    }
+
+    // Returns the args
+    string getArgs() {
+      string retval = "";
+
+      for (vector<string>::iterator it = this->args.begin(); it != this->args.end(); ++it) {
+        retval += " " + *it;
+      }
+
+      return retval;
+    }
 };
 
-
+// Parses a given input into a Command
 Command parseCommand(string input) {
   stringstream ss(input);
   string token;
@@ -56,6 +76,7 @@ Command parseCommand(string input) {
   return command;
 }
 
+// Parses an input into a Command (will be reworked into a vector of commands)
 Command parseInput(string input) {
   stringstream ss(input);
   string token;

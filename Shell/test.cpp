@@ -10,5 +10,6 @@ int main() {
 
   cout << "Command Parser (cmd is 'ls -la'):" << endl;
   Command testCommand = parseCommand("ls -la");
-  cout << testCommand.toString() << endl;
+  cout << "Command: " << testCommand.getCommand() << endl;
+  cout << "Args: " << testCommand.getArgs() << endl;
 }
