@@ -8,6 +8,8 @@ int main() {
   printPrompt();
   cout << endl;
 
+  cout << "---------------------------------" << endl;
+  
   cout << "Command Parser (cmd is 'ls -la > /tmp/log'):" << endl;
   Command testCommand = parseCommand("ls -la > /tmp/log");
   cout << "Command: " << testCommand.getCommand() << endl;
