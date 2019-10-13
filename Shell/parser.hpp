@@ -14,14 +14,14 @@ class Command {
   string command;
   vector<string> args;
   // File descriptor if command is input redir
-  int inRedir = -1;
+  string inRedir = "";
   // File descriptor if command is output redir
-  int outRedir = -1;
+  string outRedir = "";
 
   void setCommand(string command) { this->command = command; }
   void setArgs(vector<string> args) { this->args = args; }
-  void setIn(int fd) { this->inRedir = fd; }
-  void setOut(int fd) { this->outRedir = fd; }
+  void setIn(string path) { this->inRedir = path; }
+  void setOut(string path) { this->outRedir = path; }
 
   // Returns the full string of command and args
   string toString() {
@@ -60,7 +60,14 @@ Command parseCommand(string input) {
   Command command;
 
   while (getline(ss, token, ' ')) {
-    tokens.push_back(token);
+    if (token == "<") {
+      getline(ss, token, ' ');
+      command.setIn(token);
+    } else if (token == ">") {
+      command.setOut(token);
+    } else {
+      tokens.push_back(token);
+    }
   }
 
   command.setCommand(tokens.at(0));
