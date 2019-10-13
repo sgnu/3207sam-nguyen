@@ -14,9 +14,9 @@ class Command {
   string command;
   vector<string> args;
   // File descriptor if command is input redir
-  string inRedir = "";
+  string inRedir;
   // File descriptor if command is output redir
-  string outRedir = "";
+  string outRedir;
 
   void setCommand(string command) { this->command = command; }
   void setArgs(vector<string> args) { this->args = args; }
@@ -64,6 +64,7 @@ Command parseCommand(string input) {
       getline(ss, token, ' ');
       command.setIn(token);
     } else if (token == ">") {
+      getline(ss, token, ' ');
       command.setOut(token);
     } else {
       tokens.push_back(token);
