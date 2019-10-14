@@ -46,51 +46,50 @@ pid_t makeP(Command command) {
 void makePPipe(vector<Command> commands) {
   pid_t p1, p2;
   // FDs
-  int fd1[2], fd2[2];
-
-  // Pipe for process 1 and 2
-  if (pipe(fd1) == -1) {
-    cerr << "Pipe failed" << endl;
-  }
-  if (pipe(fd2) == -1) {
-    cerr << "Pipe failed" << endl;
-  }
+  int fd[2];
+  pipe(fd);
 
   p1 = fork();
+  
   if (p1 == 0) {
     // Child
-    int status;
-    close(fd1[1]); // Close write end of pipe 1
+
+    dup2(fd[1], STDOUT_FILENO); // Dup stdout
+    close(fd[0]);
+    close(fd[1]);
 
     char *arr1[99];
     argsToCStr(commands[0], arr1);
 
     execvp(arr1[0], arr1);
 
-    // Wait for process 1 to finish
-    while (-1 == (waitpid(p1, &status, 0)));
-    if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
-      cerr << "Process failed" << endl;
-      exit(1);
-    }
+    close(fd[0]);
+  } else if (p1 > 0) {
+    // Parent
 
     p2 = fork();
+
     if (p2 == 0) {
       // Child
-      close(fd2[0]); // Close read end of pipe 2
+
+      dup2(fd[0], STDIN_FILENO);
+      close(fd[0]);
+      close(fd[1]);
 
       char *arr2[99];
       argsToCStr(commands[1], arr2);
       execvp(arr2[0], arr2);
     } else if (p2 > 0) {
       // Parent
+
+      int status;
+      while (-1 == (waitpid(p1, &status, 0)));
     } else {
       cerr << "Fork failed" << endl;
     }
-  } else if (p1 > 0) {
-    // Parent
-    close (fd1[0]); // Close read end of pipe 1
 
+    close(fd[0]);
+    close(fd[1]);
   } else {
     cerr << "Pipe failed" << endl;
   }

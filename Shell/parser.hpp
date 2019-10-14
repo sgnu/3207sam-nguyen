@@ -83,14 +83,10 @@ Command parseCommand(string input) {
   return command;
 }
 
-/** 
+/**
  * Parses an input into a Command (will be reworked into a vector of commands)
  */
-Command parseInput(string input) {
-  Command command = parseCommand(input);
-
-  return command;
-}
+Command parseInput(string input) { return parseCommand(input); }
 
 /**
  * Parses inputs into separate commands
