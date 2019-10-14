@@ -83,13 +83,26 @@ Command parseCommand(string input) {
   return command;
 }
 
-// Parses an input into a Command (will be reworked into a vector of commands)
+/** 
+ * Parses an input into a Command (will be reworked into a vector of commands)
+ */
 Command parseInput(string input) {
-  stringstream ss(input);
-  string token;
   Command command = parseCommand(input);
 
   return command;
+}
+
+/**
+ * Parses inputs into separate commands
+ * @param input Vector of strings to convert
+ * @returns Vector of Commands
+ */
+vector<Command> parseInputs(vector<string> input) {
+  vector<Command> commands;
+  for (vector<string>::iterator it = input.begin(); it != input.end(); ++it) {
+    commands.push_back(parseCommand(*it));
+  }
+  return commands;
 }
 
 /**

@@ -23,4 +23,15 @@ int main() {
 
   cout << "Execution (cmd is 'ls /bin > build/log'):" << endl;
   pid_t myP = makeP(testCommand);
+
+  cout << "---------------------------------" << endl;
+  cout << "Piping (cmd is ls | wc)" << endl;
+  cout << "---------------------------------" << endl;
+  vector<string> pipeString;
+  pipeString.push_back("ls");
+  pipeString.push_back("wc");
+  vector<Command> pipeTest = parseInputs(pipeString);
+
+  makePPipe(pipeTest);
+  cout << endl;
 }
