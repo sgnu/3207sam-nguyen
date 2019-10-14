@@ -1,5 +1,5 @@
-#include <fcntl.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/types.h>
 #include <iostream>
 #include <sstream>
@@ -21,7 +21,9 @@ class Command {
   void setIn(string path) { this->inRedir = path; }
   void setOut(string path) { this->outRedir = path; }
 
-  // Returns the full string of command and args
+  /**
+   * @returns the command and all arguments
+   */
   string toString() {
     string retval = command;
 
@@ -33,10 +35,14 @@ class Command {
     return retval;
   }
 
-  // Returns the command
+  /**
+   * @returns the command
+   */
   string getCommand() { return this->command; }
 
-  // Returns the args
+  /**
+   * @returns all arguments
+   */
   string getArgs() {
     string retval = "";
 
@@ -49,7 +55,9 @@ class Command {
   }
 };
 
-// Parses a given input into a Command
+/**
+ * Parses a string into a Command
+ */
 Command parseCommand(string input) {
   stringstream ss(input);
   string token;
@@ -70,7 +78,6 @@ Command parseCommand(string input) {
   }
 
   command.setCommand(tokens.at(0));
-  tokens.erase(tokens.begin());
   command.setArgs(tokens);
 
   return command;
@@ -83,4 +90,19 @@ Command parseInput(string input) {
   Command command = parseCommand(input);
 
   return command;
+}
+
+/**
+ * @param command command to get args from
+ * @param cArgs array to be copied to;
+ */
+void argsToCStr(Command command, char **cArgs) {
+  int i;
+  for (i = 0; i < command.args.size(); i++) {
+    cArgs[i] = (char *)malloc(800);
+    const char *mystring = command.args[i].c_str();
+    strcpy(cArgs[i], mystring);
+  }
+  cout << i;
+  cArgs[i] = nullptr;
 }
