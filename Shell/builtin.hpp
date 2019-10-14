@@ -3,10 +3,14 @@
 
 using namespace std;
 
-void changeDir(string input) {
-  chdir(input.c_str());
+int changeDir(string input) {
+  return chdir(input.c_str());
 }
 
 void printHelp() {
   cout << "help" << endl;
+}
+
+void clr() {
+  cout << string(50, '\n');
 }
