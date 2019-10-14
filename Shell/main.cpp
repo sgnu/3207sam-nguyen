@@ -25,6 +25,13 @@ int main() {
       printHelp();
     } else if (command.command == "clr") {
       clr();
+    } else if (command.command == "dir") {
+      //
+    } else if (command.command == "echo") {
+      for (int i = 1; i < command.args.size(); i++) {
+        cout << command.args[i] << " ";
+      }
+      cout << endl;
     } else {
       pid_t myP = makeP(command);
     }
