@@ -1,6 +1,6 @@
 # myshell
 
-myshell is an interactive shell that runs commands;
+myshell is an interactive shell that runs commands.
 
 ## Building
 
