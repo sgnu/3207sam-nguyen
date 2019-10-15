@@ -1,4 +1,3 @@
-#include <regex>
 #include "builtin.hpp"
 #include "process.hpp"
 #include "prompt.hpp"
@@ -16,7 +15,17 @@ int main(int argc, char *argv[]) {
       printPrompt();
       getline(cin, input);
 
-      if (input.find('|') != string::npos) {
+      if (input.find('&') != string::npos) {
+        vector<string> strings;
+        stringstream ss(input);
+        string token;
+
+        while (getline(ss, token, '&')) {
+          strings.push_back(token);
+        }
+
+        makeParallel(strings);
+      } else if (input.find('|') != string::npos) {
         vector<string> tokens;
         vector<Command> commands;
         stringstream ss(input);
@@ -25,9 +34,7 @@ int main(int argc, char *argv[]) {
         // Split input into tokens separated by |
         while (getline(ss, token, '|')) {
           tokens.push_back(token);
-          // cout << token << endl;
         }
-        // cout << input << endl;
 
         commands = parseInputs(tokens);
 
@@ -35,9 +42,7 @@ int main(int argc, char *argv[]) {
           cout << i << ": " << commands[i].toString() << endl;
         }
         makePPipe(commands);
-      }
-
-      if (input.find('|') == string::npos && input.find('&') == string::npos) {
+      } else {
         Command command = parseCommand(input);
         if (command.command == "exit") {
           exit(0);

@@ -1,6 +1,6 @@
 #include <fcntl.h>
-#include "parser.hpp"
 #include <unistd.h>
+#include "parser.hpp"
 
 /**
  * Takes a Command and creates a new process that executes it
@@ -16,7 +16,7 @@ pid_t makeP(Command command) {
     // Output redirect
     if (!command.outRedir.empty()) {
       close(STDOUT_FILENO);
-      open(command.outRedir.c_str(), O_CREAT|O_WRONLY, S_IRWXU);
+      open(command.outRedir.c_str(), O_CREAT | O_WRONLY, S_IRWXU);
     }
 
     // Input redirect
@@ -50,11 +50,11 @@ void makePPipe(vector<Command> commands) {
   pipe(fd);
 
   p1 = fork();
-  
+
   if (p1 == 0) {
     // Child
 
-    dup2(fd[1], STDOUT_FILENO); // Dup stdout
+    dup2(fd[1], STDOUT_FILENO);  // Dup stdout
     close(fd[0]);
     close(fd[1]);
 
@@ -83,7 +83,8 @@ void makePPipe(vector<Command> commands) {
       // Parent
 
       int status;
-      while (-1 == (waitpid(p1, &status, 0)));
+      while (-1 == (waitpid(p1, &status, 0)))
+        ;
     } else {
       cerr << "Fork failed" << endl;
     }
@@ -92,5 +93,50 @@ void makePPipe(vector<Command> commands) {
     close(fd[1]);
   } else {
     cerr << "Pipe failed" << endl;
+  }
+}
+
+void makeParallel(vector<string> strings) {
+  vector<int> pids;
+  vector<Command> commands;
+  vector<vector<Command> > piped;
+
+  // Parse strings into commands / piped commands
+  for (int i = 0; i < strings.size(); i++) {
+    if (strings[i].find('|') != string::npos) {
+      vector<string> tokens;
+      vector<Command> commands;
+      stringstream ss(strings[i]);
+      string token;
+
+      // Split input into tokens separated by |
+      while (getline(ss, token, '|')) {
+        tokens.push_back(token);
+      }
+      piped.push_back(parseInputs(tokens));
+    } else {
+      commands.push_back(parseInput(strings[i]));
+    }
+  }
+
+  for (int i = 0; i < commands.size(); i++) {
+    makeP(commands[i]);
+  }
+
+  for (int i = 0; i < piped.size(); i++) {
+    makePPipe(piped[i]);
+  }
+
+  while (true) {
+    int status;
+    pid_t done = wait(&status);
+    if (done == -1) {
+      if (errno == ECHILD) break;  // no more child processes
+    } else {
+      if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
+        cerr << "pid " << done << " failed" << endl;
+        exit(1);
+      }
+    }
   }
 }

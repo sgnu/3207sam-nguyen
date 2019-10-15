@@ -1,10 +1,6 @@
-#include <stdio.h>
-#include <iomanip>
 #include <iostream>
-#include <sstream>
 
-using namespace std;
-
+// Prints the prompt
 void printPrompt() {
   // // Get PWD from environment variables
   // string pwd = getenv("PWD");
@@ -20,6 +16,9 @@ void printPrompt() {
   // tm* now = localtime(&t);
 
   // // Prints time as HH:MM (24 hour format)
-  // cout << now->tm_hour << ":" << now->tm_min << " /" << curDir << '/' << endl;
-  cout << "\033[36m" << "myshell> " << "\033[0m";
+  // cout << now->tm_hour << ":" << now->tm_min << " /" << curDir << '/' <<
+  // endl;
+  cout << "\033[36m"
+       << "myshell> "
+       << "\033[0m";
 }
