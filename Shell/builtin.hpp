@@ -8,7 +8,7 @@ int changeDir(string input) {
 }
 
 void printHelp() {
-  cout << "help" << endl;
+  cout << "myshell is an interactive shell that can run commands" << endl;
 }
 
 void clr() {
