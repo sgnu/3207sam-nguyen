@@ -9,27 +9,28 @@ int main(int argc, char *argv[]) {
   string input;
   if (argc > 1) {
     // Runs an external file
-    cout << "hello" << endl;
   } else {
     // Runs an interactive shell
 
-    while (input != "exit") {
+    do {
       printPrompt();
       getline(cin, input);
 
       if (input.find('|') != string::npos) {
         vector<string> tokens;
+        vector<Command> commands;
         stringstream ss(input);
         string token;
 
         // Split input into tokens separated by |
         while (getline(ss, token, '|')) {
           tokens.push_back(token);
-          cout << token << endl;
+          // cout << token << endl;
         }
-        cout << input << endl;
+        // cout << input << endl;
 
-        vector<Command> commands = parseInputs(tokens);
+        commands = parseInputs(tokens);
+
         for (int i = 0; i < commands.size(); i++) {
           cout << i << ": " << commands[i].toString() << endl;
         }
@@ -63,6 +64,6 @@ int main(int argc, char *argv[]) {
           makeP(command);
         }
       }
-    }
+    } while (input != "exit");
   }
 }

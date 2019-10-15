@@ -66,6 +66,7 @@ Command parseCommand(string input) {
   Command command;
 
   while (getline(ss, token, ' ')) {
+    if (token.empty()) { continue; }
     if (token == "<") {
       getline(ss, token, ' ');
       command.setIn(token);
