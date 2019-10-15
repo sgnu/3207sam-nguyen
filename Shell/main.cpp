@@ -37,10 +37,7 @@ int main(int argc, char *argv[]) {
         }
 
         commands = parseInputs(tokens);
-
-        for (int i = 0; i < commands.size(); i++) {
-          cout << i << ": " << commands[i].toString() << endl;
-        }
+        
         makePPipe(commands);
       } else {
         Command command = parseCommand(input);
