@@ -15,13 +15,15 @@ char dict[256000][MAXLINE];
 int count = 0;
 
 void enqueueFD(int fd);
-void dequeueFD(int fd);
+int dequeueFD();
+
+void *spellChecker(void *param);
 
 int main(int argc, char*argv[]) {
   int listenFD, clientFD, port, clientLength;
   struct hostent *hp;
   struct sockaddr_in clientAddress;
-  rio_t rio;
+  pthread_t spellCheckers[WORKERS];
 
   if (argc != 2) {
     fprintf(stderr, "Usage: %s <port>\n", argv[0]);
@@ -39,6 +41,10 @@ int main(int argc, char*argv[]) {
     count++;
   }
 
+  for (int i = 0; i < WORKERS; i++) {
+    pthread_create(&spellCheckers[i], NULL, spellChecker, NULL);
+  }
+
   fprintf(stdout, "Server started at: %d\n", port);
 
   listenFD = open_listenfd(port);
@@ -46,6 +52,7 @@ int main(int argc, char*argv[]) {
   while (1) {
     clientLength = sizeof(clientAddress);
     clientFD = accept(listenFD, (SA *) &clientAddress, &clientLength);
+    hp = gethostbyaddr((const char *) &clientAddress.sin_addr.s_addr, sizeof(clientAddress.sin_addr.s_addr), AF_INET);
     enqueueFD(clientFD);
   }
 }
@@ -67,14 +74,32 @@ int dequeueFD() {
   pthread_mutex_lock(&fdMutex);
   
   while (fdQ->size == 0) {
-    pthread_cond_wait(&qEmpty, &fdMutex);
+    pthread_cond_wait(&fdQEmpty, &fdMutex);
   }
 
   int num = intQPeek(fdQ);
   intQPop(fdQ);
 
-  p_thread_cond_signal(&fdQFull);
+  pthread_cond_signal(&fdQFull);
   pthread_mutex_unlock(&fdMutex);
 
   return num;
+}
+
+void *spellChecker(void *param) {
+  rio_t rio;
+  while (1) {
+    int clientFD;
+    clientFD = dequeueFD();
+
+    printf("Worker connected to %d\n", clientFD);
+
+    rio_readinitb(&rio, clientFD);
+    
+    printToUser(&rio, clientFD, "Connection Success!\n");
+
+    while (1) {
+
+    }
+  }
 }
