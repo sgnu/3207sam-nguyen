@@ -1,6 +1,7 @@
 #include "headers/network.h"
 #include "headers/intqueue.h"
 
+#define PORT 4200
 #define DICT_FILE "/usr/share/dict/words"
 #define QUEUE_SIZE 16
 #define WORKERS 2
@@ -36,20 +37,26 @@ int checkWord(const char*word);
 
 int main(int argc, char*argv[]) {
   int listenFD, clientFD, port, clientLength;
+  char *dictionaryFile;
   struct hostent *hp;
   struct sockaddr_in clientAddress;
   pthread_t spellCheckers[WORKERS], loggerThread;
 
-  if (argc != 2) {
-    fprintf(stderr, "Usage: %s <port>\n", argv[0]);
-    exit(EXIT_FAILURE);
+  if (argc == 1) {
+    port = PORT;
+    strcpy(dictionaryFile, DICT_FILE);
+  } else if (argc == 2) {
+    port = atoi(argv[1]);
+    strcpy(dictionaryFile, DICT_FILE);
+  } else {
+    port = atoi(argv[1]);
+    strcpy(dictionaryFile, argv[2]);
   }
-  port = atoi(argv[1]);
   
   fdQ = createIntQ(QUEUE_SIZE);
 
   char buffer[MAXLINE];
-  FILE * dictFile = fopen(DICT_FILE, "r");
+  FILE * dictFile = fopen(dictionaryFile, "r");
 
   while(fscanf(dictFile, "%s", buffer) > 0) {
     strcpy(dict[count], buffer);
