@@ -2,10 +2,8 @@
 #define NETWORK_H
 #include "csapp.h"
 
-/**
- * Establishes a connection to a client through a socket
- * @returns fd of client
- */
-int openClientFD(char* hostName, int port);
+void getUserInput(rio_t *rio, int fd, char* string);
+
+void printToUser(rio_t *rio, int fd, char *message);
 
 #endif
