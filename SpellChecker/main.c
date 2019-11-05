@@ -9,9 +9,16 @@ pthread_mutex_t fdMutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t fdQEmpty = PTHREAD_COND_INITIALIZER;
 pthread_cond_t fdQFull  = PTHREAD_COND_INITIALIZER;
 
+pthread_mutex_t logMutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t logQEmpty = PTHREAD_COND_INITIALIZER;
+pthread_cond_t logQFull  = PTHREAD_COND_INITIALIZER;
+
 struct IntQ *fdQ;
 // Q just like intQ; didn't feel like implementing it the same way
 char logQ[QUEUE_SIZE][MAXLINE];
+int logFront = 0;
+int logRear = -1;
+int logSize = 0;
 
 char dict[256000][MAXLINE];
 int count = 0;
@@ -19,7 +26,11 @@ int count = 0;
 void enqueueFD(int fd);
 int dequeueFD();
 
+void enqueueLog(const char* string);
+void dequeueLog(char* string);
+
 void *spellChecker(void *param);
+void *logger(void *param);
 
 int checkWord(const char*word);
 
@@ -27,7 +38,7 @@ int main(int argc, char*argv[]) {
   int listenFD, clientFD, port, clientLength;
   struct hostent *hp;
   struct sockaddr_in clientAddress;
-  pthread_t spellCheckers[WORKERS];
+  pthread_t spellCheckers[WORKERS], loggerThread;
 
   if (argc != 2) {
     fprintf(stderr, "Usage: %s <port>\n", argv[0]);
@@ -44,6 +55,8 @@ int main(int argc, char*argv[]) {
     strcpy(dict[count], buffer);
     count++;
   }
+
+  pthread_create(&loggerThread, NULL, logger, NULL);
 
   for (int i = 0; i < WORKERS; i++) {
     pthread_create(&spellCheckers[i], NULL, spellChecker, NULL);
@@ -90,6 +103,48 @@ int dequeueFD() {
   return num;
 }
 
+void enqueueLog(const char *string) {
+  pthread_mutex_lock(&logMutex);
+
+  while (logSize == QUEUE_SIZE) {
+    pthread_cond_wait(&logQFull, &logMutex);
+  }
+
+  if (logSize >= QUEUE_SIZE) {
+    fprintf(stderr, "Pushing into log queue when queue is full\n");
+    exit(EXIT_FAILURE);
+  }
+
+  logSize++;
+  logRear = (logRear + 1) % QUEUE_SIZE;
+  strcpy(logQ[logRear], string);
+
+  pthread_cond_signal(&logQEmpty);
+  pthread_mutex_unlock(&logMutex);
+}
+
+void dequeueLog(char *string) {
+  pthread_mutex_lock(&logMutex);
+
+  while (logSize == 0) {
+    pthread_cond_wait(&logQEmpty, &logMutex);
+  }
+
+  if (logSize <= 0) {
+    fprintf(stderr, "Popping from log queue when queue is empty\n");
+    exit(EXIT_FAILURE);
+  }
+
+  logSize--;
+
+  strcpy(string, logQ[logFront]);
+  memset(logQ[logFront], 0, MAXLINE);
+  logFront = (logFront + 1) % QUEUE_SIZE;
+
+  pthread_cond_signal(&logQFull);
+  pthread_mutex_unlock(&logMutex);
+}
+
 void *spellChecker(void *param) {
   rio_t rio;
   while (1) {
@@ -115,9 +170,24 @@ void *spellChecker(void *param) {
       }
 
       printToUser(&rio, clientFD, toUser);
+      enqueueLog(toUser);
     } while (buffer[0] != 27);
 
     close(clientFD);
+  }
+}
+
+void *logger(void *param) {
+  while(1) {
+    FILE *logFile = fopen("log", "a");
+    char buffer[MAXLINE];
+    dequeueLog(buffer);
+
+    printf("logger: %s\n", buffer);
+
+    fprintf(logFile, "%s\n", buffer);
+
+    fclose(logFile);
   }
 }
 
