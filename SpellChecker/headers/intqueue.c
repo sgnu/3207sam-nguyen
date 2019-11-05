@@ -22,7 +22,7 @@ void intQPush(IntQ *intQ, int item) {
   }
 
   intQ->size++;
-  intQ->rear = (intQ->rear++) % intQ->capacity;
+  intQ->rear = (intQ->rear + 1) % intQ->capacity;
   intQ->arr[intQ->rear] = item;
 }
 
@@ -33,7 +33,7 @@ void intQPop(IntQ *intQ) {
   }
 
   intQ->size--;
-  intQ->front = (intQ->front++) % intQ->capacity;
+  intQ->front = (intQ->front + 1) % intQ->capacity;
 }
 
 int intQPeek(IntQ *intQ) {
@@ -43,4 +43,16 @@ int intQPeek(IntQ *intQ) {
   }
 
   return intQ->arr[intQ->front];
+}
+
+void intQPrint(IntQ *intQ) {
+  int i = intQ->front;
+
+  while (i != intQ->rear) {
+    printf("%d\n", intQ->arr[i]);
+    i = (i + 1) % intQ->capacity;
+  } // Prints up to rear
+
+  // Print the rear
+  printf("%d\n", intQ->arr[intQ->rear]);
 }

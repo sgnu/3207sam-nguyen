@@ -36,5 +36,9 @@ void intQPop(IntQ *intQ);
  * Gets the int from the front without removing it
  */
 int intQPeek(IntQ *intQ);
+/**
+ * Prints all elements in the queue
+ */
+void intQPrint(IntQ *intQ);
 
 #endif
