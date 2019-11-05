@@ -14,9 +14,9 @@ int main(int argc, char **argv) {
   }
   port = atoi(argv[1]);
 
-  fprintf(stdout, "Server started at: %s\n", argv[1]);
+  fprintf(stdout, "Server started at: %d\n", port);
 
-   listenFD = open_listenfd(port);
+  listenFD = open_listenfd(port);
 
   while (1) {
     clientLength = sizeof(clientAddress);
@@ -24,7 +24,8 @@ int main(int argc, char **argv) {
 
     hp = gethostbyaddr((const char *) &clientAddress.sin_addr.s_addr, sizeof(clientAddress.sin_addr.s_addr), AF_INET);
 
-    dprintf(clientFD, "Connection Success!\n");
+    printToUser(&rio, clientFD, "Connection Success!\n");
+
     doUserInput(clientFD, &rio);
 
     close(clientFD);
@@ -35,9 +36,10 @@ int doUserInput(int fd, rio_t *rio) {
   size_t n;
   char buffer[MAXLINE];
 
-  rio_readinitb(&rio, fd);
+  rio_readinitb(rio, fd);
 
-  while((n = rio_readlineb(&rio, buffer, MAXLINE)) != 0) {
-    rio_writen(fd, buffer, n);
-  }
+  do {
+    getUserInput(rio, fd, buffer);
+    printToUser(rio, fd, buffer);
+  } while (buffer[0] != 27);
 }
