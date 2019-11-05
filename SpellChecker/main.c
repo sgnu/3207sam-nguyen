@@ -10,6 +10,8 @@ pthread_cond_t fdQEmpty = PTHREAD_COND_INITIALIZER;
 pthread_cond_t fdQFull  = PTHREAD_COND_INITIALIZER;
 
 struct IntQ *fdQ;
+// Q just like intQ; didn't feel like implementing it the same way
+char logQ[QUEUE_SIZE][MAXLINE];
 
 char dict[256000][MAXLINE];
 int count = 0;
@@ -18,6 +20,8 @@ void enqueueFD(int fd);
 int dequeueFD();
 
 void *spellChecker(void *param);
+
+int checkWord(const char*word);
 
 int main(int argc, char*argv[]) {
   int listenFD, clientFD, port, clientLength;
@@ -89,8 +93,8 @@ int dequeueFD() {
 void *spellChecker(void *param) {
   rio_t rio;
   while (1) {
-    int clientFD;
-    clientFD = dequeueFD();
+    char buffer[MAXLINE];
+    int clientFD = dequeueFD();
 
     printf("Worker connected to %d\n", clientFD);
 
@@ -98,8 +102,34 @@ void *spellChecker(void *param) {
     
     printToUser(&rio, clientFD, "Connection Success!\n");
 
-    while (1) {
+    do {
+      memset(buffer, 0, sizeof(buffer));
+      char toUser[MAXLINE];
+      getUserInput(&rio, clientFD, buffer);
+      strcpy(toUser, buffer);
 
+      if (checkWord(buffer) == 1) {
+        strcat(toUser, " OK\n");
+      } else {
+        strcat(toUser, " MISSPELLED\n");
+      }
+
+      printToUser(&rio, clientFD, toUser);
+    } while (buffer[0] != 27);
+
+    close(clientFD);
+  }
+}
+
+int checkWord(const char *word) {
+  int i = 0;
+  
+  while (strcmp(word, dict[i]) > 0) {
+    i++;
+    if (strcmp(word, dict[i]) == 0) {
+      return 1;
     }
   }
+
+  return 0;
 }
