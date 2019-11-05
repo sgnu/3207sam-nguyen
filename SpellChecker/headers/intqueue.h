@@ -20,7 +20,7 @@ typedef struct IntQ {
  * @param size max size of queue
  * @returns a queue
  */
-IntQ *createIntQueue(int size);
+IntQ *createIntQ(int size);
 
 /**
  * Adds an int to the rear of the queue

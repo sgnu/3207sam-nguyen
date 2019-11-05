@@ -1,6 +1,6 @@
 #include "intqueue.h"
 
-IntQ *createIntQueue(int capacity) {
+IntQ *createIntQ(int capacity) {
   // Create the intQ
   IntQ *intQ;
   intQ = (IntQ *) malloc(sizeof(IntQ));
