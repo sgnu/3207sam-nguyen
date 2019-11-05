@@ -1,7 +1,7 @@
 #include "../headers/intqueue.h"
 
 int main(void) {
-  struct IntQ *queue = createIntQueue(4);
+  struct IntQ *queue = createIntQ(4);
   for (int i = 0; i < 4; i++) {
     intQPush(queue, i);
   }
