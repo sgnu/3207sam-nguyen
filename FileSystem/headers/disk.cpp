@@ -1,6 +1,22 @@
+#include "disk.h"
 #include "disk.hpp"
 
-// Is the virtual disk open (active)
-static bool isActive = false;
-// File handle to virtual disk
-static int handle;
+int makeDisk(string name) {
+  return make_dish(name.c_str());
+}
+
+int openDisk(string name) {
+  return open_disk(name.c_str());
+}
+
+int closeDisk() {
+  return close_disk();
+}
+
+int blockWrite(int block, string buffer) {
+  block_write(block, buffer.c_str());
+}
+
+int blockRead(int block, string buffer) {
+  block_read(block, buffer.c_str());
+}

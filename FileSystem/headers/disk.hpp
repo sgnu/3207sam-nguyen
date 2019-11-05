@@ -1,32 +1,16 @@
-#ifndef DISK_H
-#define DISK_H
-
-#define DISK_BLOCKS 16384
-#define BLOCK_SIZE  4096
-
 /**
- * Creates an empty, virtual disk file
+ * Wrapper functions for the provided disk.h and disk.c libraries
+ * Allows for easy conversion from C++ strings to C strings
  */
+
+#ifndef _DISK_HPP_
+#define _DISK_HPP_
+
 int makeDisk(string name);
-
-/**
- * Opens a virtual disk (file)
- */
 int openDisk(string name);
+int closeDisk();
 
-/**
- * Closes a previously opened disk (file)
- */
-int close_disk();
-
-/**
- * Writes a block of size BLOCK_SIZE to disk
- */
-int block_write(int block, string buffer);
-
-/**
- * Reads a block of size BLOCK_SIZE from disk
- */
-int block_read(int block, string buffer);
+int blockWrite(int block, string buffer);
+int blockRead(int block, string buffer);
 
 #endif
