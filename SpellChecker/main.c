@@ -37,26 +37,25 @@ int checkWord(const char*word);
 
 int main(int argc, char*argv[]) {
   int listenFD, clientFD, port, clientLength;
-  char *dictionaryFile;
+  FILE *dictFile;
   struct hostent *hp;
   struct sockaddr_in clientAddress;
   pthread_t spellCheckers[WORKERS], loggerThread;
 
   if (argc == 1) {
     port = PORT;
-    strcpy(dictionaryFile, DICT_FILE);
+    dictFile = fopen(DICT_FILE, "r");
   } else if (argc == 2) {
     port = atoi(argv[1]);
-    strcpy(dictionaryFile, DICT_FILE);
+    dictFile = fopen(DICT_FILE, "r");
   } else {
     port = atoi(argv[1]);
-    strcpy(dictionaryFile, argv[2]);
+    dictFile = fopen(argv[2], "r");
   }
   
   fdQ = createIntQ(QUEUE_SIZE);
 
   char buffer[MAXLINE];
-  FILE * dictFile = fopen(dictionaryFile, "r");
 
   while(fscanf(dictFile, "%s", buffer) > 0) {
     strcpy(dict[count], buffer);
