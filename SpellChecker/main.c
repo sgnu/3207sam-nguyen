@@ -1,6 +1,7 @@
 #include "headers/network.h"
 #include "headers/intqueue.h"
 
+#define DICT_FILE "/usr/share/dict/words"
 #define QUEUE_SIZE 16
 #define WORKERS 2
 
@@ -9,6 +10,9 @@ pthread_cond_t fdQEmpty = PTHREAD_COND_INITIALIZER;
 pthread_cond_t fdQFull  = PTHREAD_COND_INITIALIZER;
 
 struct IntQ *fdQ;
+
+char dict[256000][MAXLINE];
+int count = 0;
 
 void enqueueFD(int fd);
 void dequeueFD(int fd);
@@ -26,6 +30,14 @@ int main(int argc, char*argv[]) {
   port = atoi(argv[1]);
   
   fdQ = createIntQ(QUEUE_SIZE);
+
+  char buffer[MAXLINE];
+  FILE * dictFile = fopen(DICT_FILE, "r");
+
+  while(fscanf(dictFile, "%s", buffer) > 0) {
+    strcpy(dict[count], buffer);
+    count++;
+  }
 
   fprintf(stdout, "Server started at: %d\n", port);
 
