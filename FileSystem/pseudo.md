@@ -2,7 +2,7 @@
 
 Each block is 4096 bytes. There is a total of 16,384 blocks and will be split evenly between the metadata and data regions: 8192 blocks for metadata and 8192 blocks for data.
 
-## Metadata Region Block Allocation
+## Metadata Region: Block Allocation
 
 There will 256 inodes (ie. 256 files), each of which will comprise of 256 bytes. This totals to 65,536 bytes, or 16 blocks.
 
@@ -31,7 +31,11 @@ Each inode will need to have:
 ```c++
 struct Inode {
   char[16] name;
-  bool isDir: 1;
+  bool isDir;
   uint32 size;
+  uint32 blocks;
+  // Protection
+  // Time
+  uint32 pointerBlock;
 }
 ```
