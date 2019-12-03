@@ -3,8 +3,10 @@
  * Allows for easy conversion from C++ strings to C strings
  */
 
-#ifndef _DISK_HPP_
-#define _DISK_HPP_
+#ifndef _WRAPPER_HPP_
+#define _WRAPPER_HPP_
+
+#include <iostream>
 
 int makeDisk(string name);
 int openDisk(string name);
